@@ -1,4 +1,4 @@
-!screenshot.png!
+!http://eeroan.github.com/WebConsole-reporter/screenshot.png!
 
 h1. Mocha WebConsole reporter
 
