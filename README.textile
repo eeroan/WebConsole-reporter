@@ -1,0 +1,10 @@
+!screenshot.png!
+
+h1. Mocha WebConsole reporter
+
+* Works at least with Chrome and Firefox
+* Faster than html reporter
+* Makes links clickable in stacktrace
+* Shows only failed tests
+* Provides urls for running separate tests
+* Supports AMD
