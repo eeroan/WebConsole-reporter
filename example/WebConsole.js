@@ -71,12 +71,19 @@
       calls.push(['groupEnd', suite])
     })
 
-    runner.on('test end', function () {
+    runner.on('test end', function (test) {
       stats.tests = stats.tests || 0
       stats.tests++
+      if (stats.errors || stats.failures)
+        console.warn('FAIL', parentSuiteTitle(test.parent) + ' ' + test.title)
 
       var percent = stats.tests / total * 100 | 0
       document.title = percent + '% ' + (stats.failures ? stats.failures + ' failures ' : '' ) + title
+
+      function parentSuiteTitle(suite) {
+        if (!suite.parent) return suite.title
+        return parentSuiteTitle(suite.parent) + ' ' + suite.title
+      }
     })
 
     runner.on('end', function () {
