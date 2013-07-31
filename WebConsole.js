@@ -1,52 +1,46 @@
 ;
-(function (root, factory) {
-  if (typeof define === "function" && define.amd) {
-    define([""], factory)
+(function(root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define([''], factory)
   } else {
     root.WebConsole = factory()
   }
-})(this, function () {
-  function WebConsole(runner, options) {
+})(this, function() {
+  function WebConsole(runner) {
     //TODO needs to be removed to options somehow
     var reporterQueryParameter = 'test=console'
 
     var stats = { suites: 0, tests: 0, passes: 0, pending: 0, failures: 0 }
-      , failures = this.failures = []
-      , tests = []
-      , total = runner.total
-      , title = document.title
-      , calls = []
+    var failures = this.failures = []
+    var total = runner.total
+    var title = document.title
+    var calls = []
 
     runner.stats = stats
 
-    runner.on('pass', function (test) {
+    runner.on('pass', function(test) {
       stats.passes = stats.passes || 0
-
       var medium = test.slow() / 2
-      test.speed = test.duration > test.slow()
-        ? 'slow'
-        : test.duration > medium
-        ? 'medium'
-        : 'fast'
-
+      test.speed = test.duration > test.slow() ? 'slow' : test.duration > medium ? 'medium' : 'fast'
       stats.passes++
     })
 
-    runner.on('pending', function () {
+    runner.on('pending', function() {
       stats.pending++
     })
 
-    runner.on('start', function () {
-      stats.start = new Date
+    runner.on('start', function() {
+      stats.start = (new Date)
     })
 
-    runner.on('fail', function (test, err) {
+    runner.on('fail', function(test, err) {
       stats.failures = stats.failures || 0
       stats.failures++
       test.err = err
       failures.push(test)
       calls.push(['info', null, test.title])
       calls.push(['error', null, test.err.stack])
+      calls.push(['log', null, {Expected: err.expected, Actual: err.actual }])
       flagFailures(test.parent)
     })
 
@@ -55,7 +49,7 @@
       if (node.parent) flagFailures(node.parent)
     }
 
-    runner.on('suite', function (suite) {
+    runner.on('suite', function(suite) {
       stats.suites = stats.suites || 0
       suite.root || stats.suites++
 
@@ -67,11 +61,11 @@
       calls.push(['log', suite, url])
       calls.push(['groupEnd', suite])
     })
-    runner.on('suite end', function (suite) {
+    runner.on('suite end', function(suite) {
       calls.push(['groupEnd', suite])
     })
 
-    runner.on('test end', function (test) {
+    runner.on('test end', function(test) {
       stats.tests = stats.tests || 0
       stats.tests++
       if (stats.errors || stats.failures)
@@ -86,16 +80,16 @@
       }
     })
 
-    runner.on('end', function () {
-      stats.end = new Date
-      stats.duration = new Date - stats.start
+    runner.on('end', function() {
+      stats.end = (new Date)
+      stats.duration = (new Date) - stats.start
       if (stats.errors || stats.failures) {
         for (var i in calls) {
           var call = calls[i]
           var command = call.shift()
           var suite = call.shift()
           var failures = !suite || suite.hasFailures
-          if (failures || command == 'info' || command == 'error') {
+          if (failures || command === 'info' || command === 'error') {
             console[command].apply(console, call)
           }
         }
@@ -113,4 +107,3 @@
 
   return WebConsole
 })
-
