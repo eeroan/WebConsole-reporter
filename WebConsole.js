@@ -15,7 +15,6 @@
     var total = runner.total
     var title = document.title
     var calls = []
-
     runner.stats = stats
 
     runner.on('pass', function(test) {
@@ -42,7 +41,6 @@
       calls.push(['error', null, test.err.stack])
       calls.push(['log', null, {Expected: err.expected, Actual: err.actual }])
       flagFailures(test.parent)
-      console.warn('FAIL', parentSuiteTitle(test.parent) + ' ' + test.title)
     })
 
     function parentSuiteTitle(suite) {
@@ -67,8 +65,10 @@
       calls.push(['log', suite, url])
       calls.push(['groupEnd', suite])
     })
+
     runner.on('suite end', function(suite) {
       calls.push(['groupEnd', suite])
+      logNewCalls()
     })
 
     runner.on('test end', function(test) {
@@ -81,17 +81,7 @@
     runner.on('end', function() {
       stats.end = (new Date)
       stats.duration = (new Date) - stats.start
-      if (stats.errors || stats.failures) {
-        for (var i in calls) {
-          var call = calls[i]
-          var command = call.shift()
-          var suite = call.shift()
-          var failures = !suite || suite.hasFailures
-          if (failures || command === 'info' || command === 'error') {
-            console[command].apply(console, call)
-          }
-        }
-      }
+      logNewCalls()
       if (stats.errors) console.warn(stats.errors, ' errors')
       if (stats.failures) console.warn(stats.failures, ' failures')
       var skipped = stats.tests - stats.failures - stats.passes
@@ -101,6 +91,21 @@
       console.log((new Date).toUTCString())
       console.log('Run all tests ' + location.origin + location.pathname + '?' + reporterQueryParameter)
     })
+
+    function logNewCalls() {
+      while (calls.length > 0) {
+        logCall(calls.shift())
+      }
+    }
+
+    function logCall(call) {
+      var command = call.shift()
+      var suite = call.shift()
+      var failures = !suite || suite.hasFailures
+      if (failures || command === 'info' || command === 'error') {
+        console[command].apply(console, call)
+      }
+    }
   }
 
   return WebConsole
