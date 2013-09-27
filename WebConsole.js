@@ -1,7 +1,7 @@
 ;
 (function(root, factory) {
   if (typeof define === 'function' && define.amd) {
-    define([''], factory)
+    define('mocha/web-console-reporter', [], factory)
   } else {
     root.WebConsole = factory()
   }
