@@ -32,6 +32,10 @@
       stats.start = (new Date)
     })
 
+    runner.on('test', function(test) {
+      console.log('Running test:', test.title)
+    })
+
     runner.on('fail', function(test, err) {
       stats.failures = stats.failures || 0
       stats.failures++
