@@ -64,10 +64,12 @@
       var parameter = '?grep=' + encodeURIComponent(suite.fullTitle()) + '&' + reporterQueryParameter
       var location = document.location
       var url = location.origin + location.pathname + parameter
-      calls.push(['group', suite, suite.title])
-      calls.push(['groupCollapsed', suite , 'url'])
-      calls.push(['log', suite, url])
-      calls.push(['groupEnd', suite])
+      if (!suite.root) {
+        calls.push(['group', suite, suite.title])
+        calls.push(['groupCollapsed', suite , 'url'])
+        calls.push(['log', suite, url])
+        calls.push(['groupEnd', suite])
+      }
     })
 
     runner.on('suite end', function(suite) {
